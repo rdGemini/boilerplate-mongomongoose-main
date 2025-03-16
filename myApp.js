@@ -1,10 +1,34 @@
-require('dotenv').config();
-
-
-let Person;
-
+require("dotenv").config();
+const mongoose = require("mongoose");
+mongoose.connect(
+  "mongodb+srv://rohitkumar:rohit@cluster0.xyzcf.mongodb.net/fcc-mongodb-and-mongoose?retryWrites=true&w=majority&appName=Cluster0",
+  { useNewUrlParser: true, useUnifiedTopology: true }
+);
+mongoose.connection.on(
+  "error",
+  console.error.bind(console, "MongoDB connection error:")
+);
+mongoose.connection.once("open", () => console.log("Connected to MongoDB"));
+const personSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  age: Number,
+  favoriteFoods: [String],
+});
+const Person = mongoose.model("Person", personSchema);
 const createAndSavePerson = (done) => {
-  done(null /*, data*/);
+  const person = new Person({
+    name: "John Doe",
+    age: 30,
+    favoriteFoods: ["Pizza", "Burger"],
+  });
+  person.save((err, data) => {
+    if (err) {
+      console.error("Error saving person:", err);
+      return done(err);
+    }
+    console.log("Person saved successfully:", data);
+    done(null, data);
+  });
 };
 
 const createManyPeople = (arrayOfPeople, done) => {
